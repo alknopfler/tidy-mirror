@@ -45,6 +45,7 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 		return MirrorConfig{}, err
 	}
 	fmt.Println("config---->", conf)
+	conf.ConfigFile = configPath
 	conf.Kubeconfig = kubeconfig
 	conf.PullSecretTempFile = "/tmp/pull-secret-temp.json"
 	conf.RegistryCertPath = "/etc/pki/ca-trust/source/anchors"
