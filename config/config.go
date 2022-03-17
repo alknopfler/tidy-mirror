@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
 )
 
 //ZTPConfig is the global configuration data model
