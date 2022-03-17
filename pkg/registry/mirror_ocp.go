@@ -45,14 +45,14 @@ func (r *Registry) mirrorOcp() error {
 	opt := adm.MirrorOptions{
 		IOStreams: genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr},
 		SecurityOptions: manifest.SecurityOptions{
-			RegistryConfig: r.Mirror.PullSecretTempFile,
+			RegistryConfig: r.PullSecretTempFile,
 		},
 		ParallelOptions: manifest.ParallelOptions{
 			MaxPerRegistry: 100,
 		},
-		From:        strings.Join(strings.Split(r.Mirror.RegistryOCPRelease, ".")[:2], "."),
-		To:          r.Mirror.RegistryURL + "/" + r.Mirror.RegistryOCPDestIndexNS,
-		ToRelease:   r.Mirror.RegistryURL + "/" + r.Mirror.RegistryOCPDestIndexNS + ":" + r.Mirror.RegistryOCPRelease + "-x86_64",
+		From:        strings.Join(strings.Split(r.RegistryOCPRelease, ".")[:2], "."),
+		To:          r.RegistryURL + "/" + r.RegistryOCPDestIndexNS,
+		ToRelease:   r.RegistryURL + "/" + r.RegistryOCPDestIndexNS + ":" + r.RegistryOCPRelease + "-x86_64",
 		SkipRelease: false,
 		DryRun:      false,
 		ImageStream: nil,

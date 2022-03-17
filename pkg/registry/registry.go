@@ -29,13 +29,13 @@ func NewRegistry(conf config.MirrorConfig) *Registry {
 
 //Func Login to log into the new registry
 func (r *Registry) Login(ctx context.Context) error {
-	args := []string{r.Mirror.RegistryURL}
+	args := []string{r.RegistryURL}
 	loginOpts := a.LoginOptions{
-		AuthFile: r.Mirror.PullSecretTempFile,
+		AuthFile: r.PullSecretTempFile,
 		//CertDir:       r.RegistryPathCaCert,
-		CertDir:       r.Mirror.RegistryCertPath,
-		Password:      r.Mirror.RegistryPass,
-		Username:      r.Mirror.RegistryUser,
+		CertDir:       r.RegistryCertPath,
+		Password:      r.RegistryPass,
+		Username:      r.RegistryUser,
 		StdinPassword: false,
 		GetLoginSet:   false,
 		//Verbose:                   false,
@@ -55,18 +55,18 @@ func (r *Registry) Login(ctx context.Context) error {
 func (r *Registry) CreateCatalogSource(ctx context.Context) error {
 	//TODO create if not exists
 	log.Println(color.InYellow(">>>> Creating catalog source."))
-	olmclient := auth.NewZTPAuth(r.Mirror.Kubeconfig).GetOlmAuth()
+	olmclient := auth.NewZTPAuth(r.Kubeconfig).GetOlmAuth()
 
 	catalogSource := &v1alpha1.CatalogSource{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      r.Mirror.OwnCatalogName,
-			Namespace: r.Mirror.MarketplaceNS,
+			Name:      r.OwnCatalogName,
+			Namespace: r.MarketplaceNS,
 		},
 		Spec: v1alpha1.CatalogSourceSpec{
 			SourceType:  v1alpha1.SourceTypeGrpc,
-			Image:       r.Mirror.RegistryURL + "/" + r.Mirror.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.Mirror.RegistryOCPRelease, ".")[:2], "."),
-			DisplayName: r.Mirror.OwnCatalogName,
-			Publisher:   r.Mirror.OwnCatalogName,
+			Image:       r.RegistryURL + "/" + r.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.RegistryOCPRelease, ".")[:2], "."),
+			DisplayName: r.OwnCatalogName,
+			Publisher:   r.OwnCatalogName,
 			UpdateStrategy: &v1alpha1.UpdateStrategy{
 				&v1alpha1.RegistryPoll{
 					Interval: &metav1.Duration{Duration: time.Minute * 30},
@@ -75,7 +75,7 @@ func (r *Registry) CreateCatalogSource(ctx context.Context) error {
 		},
 	}
 	//create catalog source
-	_, err := olmclient.CatalogSources(r.Mirror.MarketplaceNS).Create(ctx, catalogSource, metav1.CreateOptions{})
+	_, err := olmclient.CatalogSources(r.MarketplaceNS).Create(ctx, catalogSource, metav1.CreateOptions{})
 	if err != nil {
 		log.Printf(color.InRed(">>>> [ERROR] Error creating catalog source: %s"), err.Error())
 		return err
@@ -88,8 +88,8 @@ func (r *Registry) GetPullSecretBase() string {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	//get client from kubeconfig extracted based on Mode (HUB or SPOKE)
-	client := auth.NewZTPAuth(r.Mirror.Kubeconfig).GetAuth()
-	res, err := client.CoreV1().Secrets(r.Mirror.PullSecretNS).Get(ctx, r.Mirror.PullSecretName, metav1.GetOptions{})
+	client := auth.NewZTPAuth(r.Kubeconfig).GetAuth()
+	res, err := client.CoreV1().Secrets(r.PullSecretNS).Get(ctx, r.PullSecretName, metav1.GetOptions{})
 	if err != nil {
 		return ""
 	}
@@ -98,7 +98,7 @@ func (r *Registry) GetPullSecretBase() string {
 
 //Func to write the content of string to a temporal file
 func (r *Registry) WritePullSecretBaseToTempFile(data string) error {
-	err := ioutil.WriteFile(r.Mirror.PullSecretTempFile, []byte(data), 0644)
+	err := ioutil.WriteFile(r.PullSecretTempFile, []byte(data), 0644)
 	if err != nil {
 		return err
 	}

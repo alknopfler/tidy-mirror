@@ -1,14 +1,13 @@
-mirror:
-    ocp_release_version: "4.9.0"            # must be a valid OCP release version with the major.minor.patch format
-    registry_url: "registry.example.com"    # must be a valid registry URL (maybe with port number)
-    registry_username: "registry_username"  # must be a valid registry username
-    registry_password: "registry_password"  # must be a valid registry password
-    list_packages:                          # list of packages to be mirrored
-      - "kubernetes-nmstate-operator"
-      - "metallb-operator ocs-operator"
-      - "local-storage-operator"
-      - "advanced-cluster-management"
-    extra_images_to_mirror:                  # list of extra images to be mirrored
-      - "quay.io/jparrill/registry:3"
-      - "registry.access.redhat.com/rhscl/httpd-24-rhel7:latest"
-      - "quay.io/ztpfw/ui:latest"
+ocp_release_version: "4.9.0"            # must be a valid OCP release version with the major.minor.patch format
+registry_url: "registry.example.com"    # must be a valid registry URL (maybe with port number)
+registry_username: "registry_username"  # must be a valid registry username
+registry_password: "registry_password"  # must be a valid registry password
+list_packages:                          # list of packages to be mirrored
+  - "kubernetes-nmstate-operator"
+  - "metallb-operator ocs-operator"
+  - "local-storage-operator"
+  - "advanced-cluster-management"
+extra_images_to_mirror:                  # list of extra images to be mirrored
+  - "quay.io/jparrill/registry:3"
+  - "registry.access.redhat.com/rhscl/httpd-24-rhel7:latest"
+  - "quay.io/ztpfw/ui:latest"

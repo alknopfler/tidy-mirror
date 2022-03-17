@@ -14,13 +14,13 @@ func NewMirrorOlm() *cobra.Command {
 		Use:   "olm",
 		Short: "Mirroring the OLM operators to the registry deployed based on mode (hub or spoke)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			conf, err := config.NewConfig(kubeconfig, configPath)
+			conf, err := config.NewConfig(configPath, kubeconfig)
 			if err != nil {
 				return err
 			}
 			r = registry.NewRegistry(conf)
 			r.WritePullSecretBaseToTempFile(r.GetPullSecretBase())
-			defer os.Remove(r.Mirror.PullSecretTempFile)
+			defer os.Remove(r.PullSecretTempFile)
 			return r.RunMirrorOlm()
 		},
 	}
