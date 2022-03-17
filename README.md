@@ -25,7 +25,7 @@ $ t-mirror -h
 
 $ t-mirror ocp --kubeconfig=/path/to/kubeconfig --config-file=/path/to/config.yaml
 
-$ t-mirror olm --kubeconfig=/path/to/kubeconfig --config-file=/path/to/config.yaml --dry-run
+$ t-mirror olm --kubeconfig=/path/to/kubeconfig --config-file=/path/to/config.yaml
 ```
 
 
