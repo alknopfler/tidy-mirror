@@ -111,16 +111,16 @@ func (r *Registry) RunMirrorOlm() error {
 func (r *Registry) pruneCatalog() error {
 
 	//TODO For to parallelize the mirroring of the olm with goroutines
-	logger := logrus.WithFields(logrus.Fields{"packages": r.ListPackages})
+	logger := logrus.WithFields(logrus.Fields{"packages": r.Mirror.ListPackages})
 
 	logger.Info(color.InYellow(" >>>> [INFO] Pruning the index"))
 	indexPruner := indexer.NewIndexPruner(containertools.NewContainerTool("podman", containertools.PodmanTool), logger)
 
 	request := indexer.PruneFromIndexRequest{
 		Generate:  true,
-		FromIndex: r.RegistryOLMSourceIndex,
-		Packages:  r.ListPackages,
-		Tag:       r.RegistryURL + "/" + r.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.RegistryOCPRelease, ".")[:2], "."),
+		FromIndex: r.Mirror.RegistryOLMSourceIndex,
+		Packages:  r.Mirror.ListPackages,
+		Tag:       r.Mirror.RegistryURL + "/" + r.Mirror.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.Mirror.RegistryOCPRelease, ".")[:2], "."),
 	}
 
 	err := indexPruner.PruneFromIndex(request)
@@ -135,8 +135,8 @@ func (r *Registry) pruneCatalog() error {
 func (r *Registry) pushCatalog() error {
 	//TODO solve issue with podman https://github.com/alknopfler/tidy-mirror/issues/1#issue-1147187533
 	//Workarround using exec to push the catalog
-	log.Println(color.InYellow(" >>>> [INFO] Doing: podman push " + r.RegistryURL + "/" + r.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.RegistryOCPRelease, ".")[:2], ".") + " --authfile " + r.PullSecretTempFile))
-	cmd := exec.Command("podman", "push", r.RegistryURL+"/"+r.RegistryOLMDestIndexNS+":v"+strings.Join(strings.Split(r.RegistryOCPRelease, ".")[:2], "."), "--authfile", r.PullSecretTempFile)
+	log.Println(color.InYellow(" >>>> [INFO] Doing: podman push " + r.Mirror.RegistryURL + "/" + r.Mirror.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.Mirror.RegistryOCPRelease, ".")[:2], ".") + " --authfile " + r.Mirror.PullSecretTempFile))
+	cmd := exec.Command("podman", "push", r.Mirror.RegistryURL+"/"+r.Mirror.RegistryOLMDestIndexNS+":v"+strings.Join(strings.Split(r.Mirror.RegistryOCPRelease, ".")[:2], "."), "--authfile", r.Mirror.PullSecretTempFile)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -154,7 +154,7 @@ func (r *Registry) pushCatalog() error {
 func (r *Registry) mirrorCatalog() error {
 	log.Println(color.InYellow("[INFO] Creating new Mirror Catalog"))
 	o := adm.NewMirrorCatalogOptions(genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr})
-	o.SecurityOptions.RegistryConfig = r.PullSecretTempFile
+	o.SecurityOptions.RegistryConfig = r.Mirror.PullSecretTempFile
 	o.SecurityOptions.SkipVerification = true
 	o.ParallelOptions.MaxPerRegistry = 100
 	o.ManifestDir = ""
@@ -169,8 +169,8 @@ func (r *Registry) mirrorCatalog() error {
 	cmd := cobra.Command{}
 
 	log.Println(color.InYellow("[INFO] Generating options source and destionation for the mirror catalog"))
-	source := r.RegistryURL + "/" + r.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.RegistryOCPRelease, ".")[:2], ".")
-	dest := r.RegistryURL + "/" + r.RegistryOLMDestIndexNS
+	source := r.Mirror.RegistryURL + "/" + r.Mirror.RegistryOLMDestIndexNS + ":v" + strings.Join(strings.Split(r.Mirror.RegistryOCPRelease, ".")[:2], ".")
+	dest := r.Mirror.RegistryURL + "/" + r.Mirror.RegistryOLMDestIndexNS
 	err := o.Complete(&cmd, []string{source, dest})
 	if err != nil {
 		log.Println(color.InRed("[ERROR] Error generating options source and destination for the mirror catalog"))
@@ -194,7 +194,7 @@ func (r *Registry) copyExtraImages() error {
 	fatalErrors := make(chan error)
 	wgDone := make(chan bool)
 
-	for _, image := range r.ExtraImagesToMirror {
+	for _, image := range r.Mirror.ExtraImagesToMirror {
 		log.Println(color.InYellow("[INFO] Copying extra image: " + image))
 		go func() {
 			if err := r.copyImage(image); err != nil {
@@ -225,7 +225,7 @@ func (r *Registry) copyExtraImages() error {
 
 func (r *Registry) copyImage(image string) error {
 	//skopeo copy docker://${image} docker://${DESTINATION_REGISTRY}/${image#*/} --all --authfile ${PULL_SECRET}
-	cmd := exec.Command("skopeo", "copy", "docker://"+image, "docker://"+r.RegistryURL+"/"+strings.Join(strings.Split(image, "/")[1:], "/"), "--all", "--authfile", r.PullSecretTempFile)
+	cmd := exec.Command("skopeo", "copy", "docker://"+image, "docker://"+r.Mirror.RegistryURL+"/"+strings.Join(strings.Split(image, "/")[1:], "/"), "--all", "--authfile", r.Mirror.PullSecretTempFile)
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr

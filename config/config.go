@@ -11,23 +11,25 @@ import (
 
 //ZTPConfig is the global configuration data model
 type MirrorConfig struct {
-	PullSecretTempFile     string
-	ConfigFile             string
-	Kubeconfig             string
-	RegistryCertPath       string
-	PullSecretNS           string
-	PullSecretName         string
-	RegistryOCPDestIndexNS string
-	RegistryOLMSourceIndex string
-	RegistryOLMDestIndexNS string
-	MarketplaceNS          string
-	OwnCatalogName         string
-	RegistryOCPRelease     string   `yaml:"ocp_release_version"`
-	RegistryURL            string   `yaml:"registry_url"`
-	RegistryUser           string   `yaml:"registry_username"`
-	RegistryPass           string   `yaml:"registry_password"`
-	ListPackages           []string `yaml:"list_packages"`
-	ExtraImagesToMirror    []string `yaml:"extra_images_to_mirror"`
+	Mirror struct {
+		PullSecretTempFile     string
+		ConfigFile             string
+		Kubeconfig             string
+		RegistryCertPath       string
+		PullSecretNS           string
+		PullSecretName         string
+		RegistryOCPDestIndexNS string
+		RegistryOLMSourceIndex string
+		RegistryOLMDestIndexNS string
+		MarketplaceNS          string
+		OwnCatalogName         string
+		RegistryOCPRelease     string   `yaml:"ocp_release_version"`
+		RegistryURL            string   `yaml:"registry_url"`
+		RegistryUser           string   `yaml:"registry_username"`
+		RegistryPass           string   `yaml:"registry_password"`
+		ListPackages           []string `yaml:"list_packages"`
+		ExtraImagesToMirror    []string `yaml:"extra_images_to_mirror"`
+	} `yaml:"mirror"`
 }
 
 //fmt.Println(e.Spokes[0].Name, e.Spokes[0].Master0.NicExtDhcp)
@@ -45,16 +47,16 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 		return MirrorConfig{}, err
 	}
 	fmt.Println("config---->", conf)
-	conf.Kubeconfig = kubeconfig
-	conf.PullSecretTempFile = "/tmp/pull-secret-temp.json"
-	conf.RegistryCertPath = "/etc/pki/ca-trust/source/anchors"
-	conf.PullSecretNS = "openshift-config"
-	conf.PullSecretName = "pull-secret"
-	conf.RegistryOCPDestIndexNS = "ocp4/openshift4"
-	conf.RegistryOLMSourceIndex = "registry.redhat.io/redhat/redhat-operator-index:v"
-	conf.RegistryOLMDestIndexNS = "olm/redhat-operator-index"
-	conf.MarketplaceNS = "openshift-marketplace"
-	conf.OwnCatalogName = "Tmirror Catalog"
+	conf.Mirror.Kubeconfig = kubeconfig
+	conf.Mirror.PullSecretTempFile = "/tmp/pull-secret-temp.json"
+	conf.Mirror.RegistryCertPath = "/etc/pki/ca-trust/source/anchors"
+	conf.Mirror.PullSecretNS = "openshift-config"
+	conf.Mirror.PullSecretName = "pull-secret"
+	conf.Mirror.RegistryOCPDestIndexNS = "ocp4/openshift4"
+	conf.Mirror.RegistryOLMSourceIndex = "registry.redhat.io/redhat/redhat-operator-index:v"
+	conf.Mirror.RegistryOLMDestIndexNS = "olm/redhat-operator-index"
+	conf.Mirror.MarketplaceNS = "openshift-marketplace"
+	conf.Mirror.OwnCatalogName = "Tmirror Catalog"
 	fmt.Println("config-post----->", conf)
 
 	// Set the rest of config from param
@@ -62,10 +64,10 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 		return conf, fmt.Errorf(color.InRed("Kubeconfig param is empty"), "")
 	}
 	fmt.Println(color.InYellow(">>>> [INFO] KUBECONFIG env is not empty. Reading file from this path: " + kubeconfig))
-	conf.Kubeconfig = kubeconfig
+	conf.Mirror.Kubeconfig = kubeconfig
 
 	//modify config for source index depending on the config read from file
-	conf.RegistryOLMSourceIndex += strings.Join(strings.Split(conf.RegistryOCPRelease, ".")[:2], ".")
+	conf.Mirror.RegistryOLMSourceIndex += strings.Join(strings.Split(conf.Mirror.RegistryOCPRelease, ".")[:2], ".")
 
 	fmt.Println("final config---->", conf)
 	return conf, nil
