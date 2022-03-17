@@ -1,5 +1,23 @@
 # Tidy-Mirror
 
+# Features
+
+Included:
+
+- ocp mirror release
+- olm package mirror
+- registry login
+- catalog source generation and apply to the cluster
+- prune index
+- push index
+- adm catalog mirror 
+
+Not included:
+
+- update trust ca
+- icsp updating
+
+
 # How to use it
 
 ```shell
