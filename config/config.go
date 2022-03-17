@@ -34,29 +34,28 @@ type MirrorConfig struct {
 
 //Constructor new config file from file
 func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
+
 	//Read main config from the config file
-	var conf = MirrorConfig{
-		Kubeconfig:             kubeconfig,
-		PullSecretTempFile:     "/tmp/pull-secret-temp.json",
-		RegistryCertPath:       "/etc/pki/ca-trust/source/anchors",
-		PullSecretNS:           "openshift-config",
-		PullSecretName:         "pull-secret",
-		RegistryOCPDestIndexNS: "ocp4/openshift4",
-		RegistryOLMSourceIndex: "registry.redhat.io/redhat/redhat-operator-index:v",
-		RegistryOLMDestIndexNS: "olm/redhat-operator-index",
-		MarketplaceNS:          "openshift-marketplace",
-		OwnCatalogName:         "Tmirror Catalog",
-	}
-
 	if configPath == "" {
-		return conf, fmt.Errorf(color.InRed("configFile param is empty"), "")
+		return MirrorConfig{}, fmt.Errorf(color.InRed("configFile param is empty"), "")
 	}
 
-	err := conf.readFromConfigFile(configPath)
+	conf, err := readFromConfigFile(configPath)
 	if err != nil {
-		return conf, err
+		return MirrorConfig{}, err
 	}
 	fmt.Println("config---->", conf)
+	conf.Kubeconfig = kubeconfig
+	conf.PullSecretTempFile = "/tmp/pull-secret-temp.json"
+	conf.RegistryCertPath = "/etc/pki/ca-trust/source/anchors"
+	conf.PullSecretNS = "openshift-config"
+	conf.PullSecretName = "pull-secret"
+	conf.RegistryOCPDestIndexNS = "ocp4/openshift4"
+	conf.RegistryOLMSourceIndex = "registry.redhat.io/redhat/redhat-operator-index:v"
+	conf.RegistryOLMDestIndexNS = "olm/redhat-operator-index"
+	conf.MarketplaceNS = "openshift-marketplace"
+	conf.OwnCatalogName = "Tmirror Catalog"
+	fmt.Println("config-post----->", conf)
 
 	// Set the rest of config from param
 	if kubeconfig == "" {
@@ -68,20 +67,21 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 	//modify config for source index depending on the config read from file
 	conf.RegistryOLMSourceIndex += strings.Join(strings.Split(conf.RegistryOCPRelease, ".")[:2], ".")
 
+	fmt.Println("final config---->", conf)
 	return conf, nil
 }
 
 //ReadFromConfigFile reads the config file
-func (c *MirrorConfig) readFromConfigFile(configFile string) error {
-
+func readFromConfigFile(configFile string) (MirrorConfig, error) {
+	var conf MirrorConfig
 	f, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		return fmt.Errorf(color.InRed("opening config file %s: %v"), configFile, err)
+		return MirrorConfig{}, fmt.Errorf(color.InRed("opening config file %s: %v"), configFile, err)
 	}
 
-	err = yaml.Unmarshal(f, c)
+	err = yaml.Unmarshal(f, conf)
 	if err != nil {
-		return fmt.Errorf(color.InRed("decoding config file %s: %v"), configFile, err)
+		return MirrorConfig{}, fmt.Errorf(color.InRed("decoding config file %s: %v"), configFile, err)
 	}
-	return nil
+	return conf, nil
 }
