@@ -3,10 +3,10 @@ package config
 import (
 	"fmt"
 	"github.com/TwiN/go-color"
-	"os"
+	"io/ioutil"
 	"strings"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 //ZTPConfig is the global configuration data model
@@ -51,23 +51,14 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 	if configPath == "" {
 		return conf, fmt.Errorf(color.InRed("configFile param is empty"), "")
 	}
-	//Read config from file
-	f, err := os.Open(configPath)
-	if err != nil {
-		return conf, fmt.Errorf(color.InRed("opening config file %s: %v"), conf.ConfigFile, err)
-	}
 
-	decoder := yaml.NewDecoder(f)
-	if err := decoder.Decode(conf); err != nil {
-		return conf, fmt.Errorf(color.InRed("decoding config file %s: %v"), conf.ConfigFile, err)
-	}
+	err := conf.readFromConfigFile(configPath)
 	if err != nil {
-		fmt.Println(color.InRed(">>>> [ERROR] Error reading config file: " + err.Error()))
 		return conf, err
 	}
-	fmt.Println(color.InYellow(">>>> [INFO] ConfigFile param is not empty. Reading file from this path: " + configPath))
+	fmt.Println("config---->", conf)
 
-	// Set the rest of config from env
+	// Set the rest of config from param
 	if kubeconfig == "" {
 		return conf, fmt.Errorf(color.InRed("Kubeconfig param is empty"), "")
 	}
@@ -81,17 +72,16 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 }
 
 //ReadFromConfigFile reads the config file
-func (c *MirrorConfig) readFromConfigFile() error {
+func (c *MirrorConfig) readFromConfigFile(configFile string) error {
 
-	f, err := os.Open(c.ConfigFile)
+	f, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		return fmt.Errorf(color.InRed("opening config file %s: %v"), c.ConfigFile, err)
+		return fmt.Errorf(color.InRed("opening config file %s: %v"), configFile, err)
 	}
-	defer f.Close()
 
-	decoder := yaml.NewDecoder(f)
-	if err := decoder.Decode(c); err != nil {
-		return fmt.Errorf(color.InRed("decoding config file %s: %v"), c.ConfigFile, err)
+	err = yaml.Unmarshal(f, c)
+	if err != nil {
+		return fmt.Errorf(color.InRed("decoding config file %s: %v"), configFile, err)
 	}
 	return nil
 }
