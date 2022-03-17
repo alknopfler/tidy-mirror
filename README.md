@@ -20,16 +20,9 @@ Not included:
 
 # How to use it
 
-```shell
-$ t-mirror -h 
+You need to prepare a config file before launching the CLI:
 
-$ t-mirror ocp --kubeconfig=/path/to/kubeconfig --config-file=/path/to/config.yaml
-
-$ t-mirror olm --kubeconfig=/path/to/kubeconfig --config-file=/path/to/config.yaml
-```
-
-
-in the config file, you can specify the following parameters:
+In the config file, you can specify the following parameters:
 
 ```yaml
 ocp_release_version: "4.9.0"            # must be a valid OCP release version with the major.minor.patch format
@@ -48,3 +41,14 @@ extra_images_to_mirror:                  # list of extra images to be mirrored
 
 
 ```
+
+Now, we're going to launch the CLI:
+```shell
+$ t-mirror -h 
+
+$ t-mirror ocp --kubeconfig=/path/to/kubeconfig --config-file=/path/to/config.yaml
+
+$ t-mirror olm --kubeconfig=/path/to/kubeconfig --config-file=/path/to/config.yaml
+```
+
+
