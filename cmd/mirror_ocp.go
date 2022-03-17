@@ -21,7 +21,7 @@ func NewMirrorOcp() *cobra.Command {
 			}
 			r = registry.NewRegistry(conf)
 			r.WritePullSecretBaseToTempFile(r.GetPullSecretBase())
-			defer os.Remove(r.PullSecretTempFile)
+			defer os.Remove(r.Mirror.PullSecretTempFile)
 			return r.RunMirrorOcp()
 		},
 	}
