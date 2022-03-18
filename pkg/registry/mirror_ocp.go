@@ -3,8 +3,6 @@ package registry
 import (
 	"context"
 	"github.com/TwiN/go-color"
-	"strings"
-
 	adm "github.com/openshift/oc/pkg/cli/admin/release"
 	"github.com/openshift/oc/pkg/cli/image/manifest"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -45,7 +43,7 @@ func (r *Registry) mirrorOcp() error {
 		ParallelOptions: manifest.ParallelOptions{
 			MaxPerRegistry: 100,
 		},
-		From:        strings.Join(strings.Split(r.RegistryOCPRelease, ".")[:2], "."),
+		From:        r.RegistryOCPReleaseImage + ":" + r.RegistryOCPRelease + "-x86_64",
 		To:          r.RegistryURL + "/" + r.RegistryOCPDestIndexNS,
 		ToRelease:   r.RegistryURL + "/" + r.RegistryOCPDestIndexNS + ":" + r.RegistryOCPRelease + "-x86_64",
 		SkipRelease: false,

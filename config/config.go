@@ -11,23 +11,24 @@ import (
 
 //ZTPConfig is the global configuration data model
 type MirrorConfig struct {
-	PullSecretTempFile     string
-	ConfigFile             string
-	Kubeconfig             string
-	RegistryCertPath       string
-	PullSecretNS           string
-	PullSecretName         string
-	RegistryOCPDestIndexNS string
-	RegistryOLMSourceIndex string
-	RegistryOLMDestIndexNS string
-	MarketplaceNS          string
-	OwnCatalogName         string
-	RegistryOCPRelease     string   `yaml:"ocp_release_version"`
-	RegistryURL            string   `yaml:"registry_url"`
-	RegistryUser           string   `yaml:"registry_username"`
-	RegistryPass           string   `yaml:"registry_password"`
-	ListPackages           []string `yaml:"list_packages"`
-	ExtraImagesToMirror    []string `yaml:"extra_images_to_mirror"`
+	PullSecretTempFile      string
+	ConfigFile              string
+	Kubeconfig              string
+	RegistryCertPath        string
+	PullSecretNS            string
+	PullSecretName          string
+	RegistryOCPDestIndexNS  string
+	RegistryOCPReleaseImage string
+	RegistryOLMSourceIndex  string
+	RegistryOLMDestIndexNS  string
+	MarketplaceNS           string
+	OwnCatalogName          string
+	RegistryOCPRelease      string   `yaml:"ocp_release_version"`
+	RegistryURL             string   `yaml:"registry_url"`
+	RegistryUser            string   `yaml:"registry_username"`
+	RegistryPass            string   `yaml:"registry_password"`
+	ListPackages            []string `yaml:"list_packages"`
+	ExtraImagesToMirror     []string `yaml:"extra_images_to_mirror"`
 }
 
 //fmt.Println(e.Spokes[0].Name, e.Spokes[0].Master0.NicExtDhcp)
@@ -52,6 +53,7 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 	conf.PullSecretNS = "openshift-config"
 	conf.PullSecretName = "pull-secret"
 	conf.RegistryOCPDestIndexNS = "ocp4/openshift4"
+	conf.RegistryOCPReleaseImage = "quay.io/openshift-release-dev/ocp-release:"
 	conf.RegistryOLMSourceIndex = "registry.redhat.io/redhat/redhat-operator-index:v"
 	conf.RegistryOLMDestIndexNS = "olm/redhat-operator-index"
 	conf.MarketplaceNS = "openshift-marketplace"
