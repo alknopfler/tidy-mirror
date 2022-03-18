@@ -43,7 +43,7 @@ func (r *Registry) mirrorOcp() error {
 		ParallelOptions: manifest.ParallelOptions{
 			MaxPerRegistry: 100,
 		},
-		From:        r.RegistryOCPReleaseImage + ":" + r.RegistryOCPRelease + "-x86_64",
+		From:        r.RegistryOCPReleaseImage + r.RegistryOCPRelease + "-x86_64",
 		To:          r.RegistryURL + "/" + r.RegistryOCPDestIndexNS,
 		ToRelease:   r.RegistryURL + "/" + r.RegistryOCPDestIndexNS + ":" + r.RegistryOCPRelease + "-x86_64",
 		SkipRelease: false,
