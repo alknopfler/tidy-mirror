@@ -57,7 +57,7 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 	conf.RegistryOLMSourceIndex = "registry.redhat.io/redhat/redhat-operator-index:v"
 	conf.RegistryOLMDestIndexNS = "olm/redhat-operator-index"
 	conf.MarketplaceNS = "openshift-marketplace"
-	conf.OwnCatalogName = "Tmirror Catalog"
+	conf.OwnCatalogName = "t-mirror catalog"
 	fmt.Println("config-post----->", conf)
 
 	// Set the rest of config from param
