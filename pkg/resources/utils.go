@@ -76,15 +76,15 @@ func WaitForPVC(ctx context.Context, client *kubernetes.Clientset, pvc *v1.Persi
 
 func Retry(attempts int, sleep time.Duration, f func() error) (err error) {
 	for i := 0; i < attempts; i++ {
-		err = f()
-		if err == nil {
-			log.Printf(color.InRed("[ERROR] Error: %s"), err.Error())
-			return nil
-		}
 		if i > 0 {
 			log.Printf(color.InYellow("[INFO] Doing a new attempt. Attempt number: %d"), i)
 			time.Sleep(sleep)
 			sleep *= 2
+		}
+		err = f()
+		if err == nil {
+			log.Printf(color.InRed("[ERROR] Error: %s"), err.Error())
+			return nil
 		}
 	}
 	log.Printf(color.InYellow("after %d attempts, last error: %s"), attempts, err.Error())

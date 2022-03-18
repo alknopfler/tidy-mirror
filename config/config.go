@@ -58,7 +58,6 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 	conf.RegistryOLMDestIndexNS = "olm/redhat-operator-index"
 	conf.MarketplaceNS = "openshift-marketplace"
 	conf.OwnCatalogName = "t-mirror-catalog"
-	fmt.Println("config-post----->", conf)
 
 	// Set the rest of config from param
 	if kubeconfig == "" {
@@ -70,7 +69,6 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 	//modify config for source index depending on the config read from file
 	conf.RegistryOLMSourceIndex += strings.Join(strings.Split(conf.RegistryOCPRelease, ".")[:2], ".")
 
-	fmt.Println("final config---->", conf)
 	return *conf, nil
 }
 
