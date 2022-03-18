@@ -83,6 +83,7 @@ func Retry(attempts int, sleep time.Duration, f func() error) (err error) {
 		}
 		err = f()
 		if err == nil {
+			log.Printf(color.InRed("[ERROR] Error: %s"), err.Error())
 			return nil
 		}
 	}
