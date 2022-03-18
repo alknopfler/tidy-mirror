@@ -60,7 +60,7 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 
 	// Set the rest of config from param
 	if kubeconfig == "" {
-		return conf, fmt.Errorf(color.InRed("Kubeconfig param is empty"), "")
+		return *conf, fmt.Errorf(color.InRed("Kubeconfig param is empty"), "")
 	}
 	fmt.Println(color.InYellow(">>>> [INFO] KUBECONFIG env is not empty. Reading file from this path: " + kubeconfig))
 	conf.Kubeconfig = kubeconfig
@@ -69,21 +69,21 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 	conf.RegistryOLMSourceIndex += strings.Join(strings.Split(conf.RegistryOCPRelease, ".")[:2], ".")
 
 	fmt.Println("final config---->", conf)
-	return conf, nil
+	return *conf, nil
 }
 
 //ReadFromConfigFile reads the config file
-func readFromConfigFile(configFile string) (MirrorConfig, error) {
-	var conf MirrorConfig
+func readFromConfigFile(configFile string) (*MirrorConfig, error) {
+	var conf = MirrorConfig{}
 	f, err := os.Open(configFile)
 	if err != nil {
-		return MirrorConfig{}, fmt.Errorf(color.InRed("opening config file %s: %v"), configFile, err)
+		return &conf, fmt.Errorf(color.InRed("opening config file %s: %v"), configFile, err)
 	}
 	defer f.Close()
 
 	decoder := yaml.NewDecoder(f)
-	if err := decoder.Decode(conf); err != nil {
-		return MirrorConfig{}, fmt.Errorf(color.InRed("decoding config file %s: %v"), configFile, err)
+	if err := decoder.Decode(&conf); err != nil {
+		return &conf, fmt.Errorf(color.InRed("decoding config file %s: %v"), configFile, err)
 	}
-	return conf, nil
+	return &conf, nil
 }
