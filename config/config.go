@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/TwiN/go-color"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -75,13 +75,14 @@ func NewConfig(configPath string, kubeconfig string) (MirrorConfig, error) {
 //ReadFromConfigFile reads the config file
 func readFromConfigFile(configFile string) (MirrorConfig, error) {
 	var conf MirrorConfig
-	f, err := ioutil.ReadFile(configFile)
+	f, err := os.Open(configFile)
 	if err != nil {
 		return MirrorConfig{}, fmt.Errorf(color.InRed("opening config file %s: %v"), configFile, err)
 	}
+	defer f.Close()
 
-	err = yaml.Unmarshal(f, conf)
-	if err != nil {
+	decoder := yaml.NewDecoder(f)
+	if err := decoder.Decode(conf); err != nil {
 		return MirrorConfig{}, fmt.Errorf(color.InRed("decoding config file %s: %v"), configFile, err)
 	}
 	return conf, nil
