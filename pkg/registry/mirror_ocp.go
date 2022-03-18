@@ -5,13 +5,9 @@ import (
 	"github.com/TwiN/go-color"
 	"strings"
 
-	"github.com/alknopfler/tidy-mirror/pkg/resources"
-
 	adm "github.com/openshift/oc/pkg/cli/admin/release"
 	"github.com/openshift/oc/pkg/cli/image/manifest"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"time"
-
 	"log"
 	"os"
 )
@@ -29,9 +25,8 @@ func (r *Registry) RunMirrorOcp() error {
 	log.Println(color.InGreen(">>>> [INFO] login to registry successful"))
 
 	//Mirror ocp with a retry strategic to avoid errors
-	err = resources.Retry(4, 1*time.Minute, func() (err error) {
-		return r.mirrorOcp()
-	})
+	err = r.mirrorOcp()
+
 	if err != nil {
 		log.Printf(color.InRed(">>>> [ERROR] mirroring the OCP image: %s"), err.Error())
 		return err
